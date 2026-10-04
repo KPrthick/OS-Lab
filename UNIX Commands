@@ -1,0 +1,10 @@
+pwd
+ls
+mkdir test
+cd test
+rm file.txt
+touch file.txt
+cat file.txt
+cp file.txt copy.txt
+mv file.txt new.txt
+rmdir test
