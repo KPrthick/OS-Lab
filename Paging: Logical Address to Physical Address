@@ -1,0 +1,28 @@
+#include <stdio.h>
+
+int main() {
+    int page_size = 100;
+    int total_pages = 4;
+    int page_table[] = {2, 5, 1, 3};
+    int LA = 250;
+
+    int page = LA / page_size;
+    int offset = LA % page_size;
+
+    printf("Logical Address = %d\n", LA);
+    printf("Page Number = %d\n", page);
+    printf("Offset = %d\n", offset);
+
+    if(page >= total_pages) {
+        printf("Invalid Logical Address\n");
+    }
+    else {
+        int frame = page_table[page];
+        int physical = frame * page_size + offset;
+
+        printf("Frame Number = %d\n", frame);
+        printf("Physical Address = %d\n", physical);
+    }
+
+    return 0;
+}
