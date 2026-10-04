@@ -1,0 +1,102 @@
+/*
+ * ============================================================
+ *                  FILE OPEN AND CLOSE
+ * ============================================================
+ *
+ * Description:
+ *     Demonstrates opening, writing, reading and closing
+ *     a file using UNIX system calls.
+ *
+ * System calls used:
+ *     open()
+ *     write()
+ *     read()
+ *     close()
+ *
+ * ============================================================
+ */
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+int main()
+{
+    int fileDescriptor;
+
+    char writeData[] =
+        "Operating System File Handling Example\n";
+
+    char readData[100];
+
+    printf("================================================\n");
+    printf("              FILE OPEN AND CLOSE\n");
+    printf("================================================\n");
+
+    /*
+     * Open or create the file.
+     *
+     * O_CREAT -> Create if file does not exist
+     * O_RDWR  -> Open for reading and writing
+     */
+    fileDescriptor = open(
+        "test.txt",
+        O_CREAT | O_RDWR,
+        0644
+    );
+
+    if (fileDescriptor < 0)
+    {
+        perror("Error opening file");
+        return 1;
+    }
+
+    printf("\nFile opened successfully.\n");
+    printf("File Descriptor = %d\n", fileDescriptor);
+
+    /*
+     * Write data into file.
+     */
+    write(
+        fileDescriptor,
+        writeData,
+        strlen(writeData)
+    );
+
+    printf("Data written successfully.\n");
+
+    /*
+     * Move file pointer back to beginning.
+     */
+    lseek(fileDescriptor, 0, SEEK_SET);
+
+    /*
+     * Read data from file.
+     */
+    int bytesRead =
+        read(fileDescriptor, readData, sizeof(readData) - 1);
+
+    if (bytesRead < 0)
+    {
+        perror("Error reading file");
+        close(fileDescriptor);
+        return 1;
+    }
+
+    readData[bytesRead] = '\0';
+
+    printf("\nData read from file:\n");
+    printf("%s", readData);
+
+    /*
+     * Close file.
+     */
+    close(fileDescriptor);
+
+    printf("\nFile closed successfully.\n");
+
+    printf("\n================================================\n");
+
+    return 0;
+}
