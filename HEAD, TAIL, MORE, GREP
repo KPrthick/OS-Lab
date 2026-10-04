@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# ============================================================
+#           UNIX TEXT PROCESSING COMMANDS
+# ============================================================
+
+echo "=========================================="
+echo "        UNIX TEXT COMMANDS"
+echo "=========================================="
+
+echo ""
+echo "HEAD - Displays beginning of a file"
+echo "Command:"
+echo "head file.txt"
+
+echo ""
+echo "TAIL - Displays end of a file"
+echo "Command:"
+echo "tail file.txt"
+
+echo ""
+echo "MORE - Displays file page by page"
+echo "Command:"
+echo "more file.txt"
+
+echo ""
+echo "GREP - Searches for a pattern"
+echo "Command:"
+echo 'grep "word" file.txt'
+
+echo ""
+echo "=========================================="
