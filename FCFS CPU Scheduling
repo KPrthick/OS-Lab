@@ -1,0 +1,131 @@
+/*
+ * ============================================================
+ *              FIRST COME FIRST SERVE SCHEDULING
+ * ============================================================
+ *
+ * Description:
+ *     FCFS executes processes in the order in which they
+ *     arrive.
+ *
+ *     For this program, all processes are assumed to arrive
+ *     at time 0.
+ *
+ * Formula:
+ *
+ *     Waiting Time = Completion Time - Burst Time
+ *
+ *     Turnaround Time = Waiting Time + Burst Time
+ *
+ * ============================================================
+ */
+
+#include <stdio.h>
+
+int main()
+{
+    int n;
+
+    printf("================================================\n");
+    printf("          FCFS CPU SCHEDULING ALGORITHM\n");
+    printf("================================================\n");
+
+    printf("\nEnter number of processes: ");
+    scanf("%d", &n);
+
+    if (n <= 0)
+    {
+        printf("Invalid number of processes.\n");
+        return 1;
+    }
+
+    int burstTime[n];
+    int waitingTime[n];
+    int turnaroundTime[n];
+    int completionTime[n];
+
+    printf("\nEnter burst time for each process:\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("P%d: ", i + 1);
+        scanf("%d", &burstTime[i]);
+
+        if (burstTime[i] < 0)
+        {
+            printf("Invalid burst time.\n");
+            return 1;
+        }
+    }
+
+    /*
+     * First process starts immediately.
+     */
+    waitingTime[0] = 0;
+
+    /*
+     * Calculate waiting time.
+     */
+    for (int i = 1; i < n; i++)
+    {
+        waitingTime[i] =
+            waitingTime[i - 1] + burstTime[i - 1];
+    }
+
+    /*
+     * Calculate completion time.
+     */
+    for (int i = 0; i < n; i++)
+    {
+        completionTime[i] =
+            waitingTime[i] + burstTime[i];
+    }
+
+    /*
+     * Calculate turnaround time.
+     */
+    for (int i = 0; i < n; i++)
+    {
+        turnaroundTime[i] =
+            completionTime[i];
+    }
+
+    double totalWaitingTime = 0;
+    double totalTurnaroundTime = 0;
+
+    printf("\n------------------------------------------------------------\n");
+
+    printf("Process\tBT\tWT\tCT\tTAT\n");
+
+    printf("------------------------------------------------------------\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        printf(
+            "P%d\t%d\t%d\t%d\t%d\n",
+            i + 1,
+            burstTime[i],
+            waitingTime[i],
+            completionTime[i],
+            turnaroundTime[i]
+        );
+
+        totalWaitingTime += waitingTime[i];
+        totalTurnaroundTime += turnaroundTime[i];
+    }
+
+    printf("------------------------------------------------------------\n");
+
+    printf(
+        "Average Waiting Time    : %.2f\n",
+        totalWaitingTime / n
+    );
+
+    printf(
+        "Average Turnaround Time : %.2f\n",
+        totalTurnaroundTime / n
+    );
+
+    printf("============================================================\n");
+
+    return 0;
+}
