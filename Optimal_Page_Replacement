@@ -1,0 +1,260 @@
+/*
+ * ============================================================
+ *              OPTIMAL PAGE REPLACEMENT
+ * ============================================================
+ *
+ * Description:
+ *     This program implements the Optimal Page Replacement
+ *     algorithm.
+ *
+ *     The Optimal algorithm replaces the page whose next use
+ *     is farthest in the future.
+ *
+ *     If a page will never be used again, that page is selected
+ *     for replacement.
+ *
+ * ============================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*
+ * Check whether a page is already present in memory.
+ */
+int isPagePresent(int frames[], int frameCount, int page)
+{
+    for (int i = 0; i < frameCount; i++)
+    {
+        if (frames[i] == page)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * Find the frame containing the page whose next use
+ * is farthest in the future.
+ */
+int findOptimalPage(
+    int frames[],
+    int frameCount,
+    int pages[],
+    int pageCount,
+    int currentIndex)
+{
+    int farthest = currentIndex;
+    int replacementIndex = -1;
+
+    for (int i = 0; i < frameCount; i++)
+    {
+        int j;
+
+        /*
+         * Search for the next occurrence of the
+         * page currently stored in this frame.
+         */
+        for (j = currentIndex + 1; j < pageCount; j++)
+        {
+            if (frames[i] == pages[j])
+            {
+                break;
+            }
+        }
+
+        /*
+         * If the page is never used again,
+         * replace it immediately.
+         */
+        if (j == pageCount)
+        {
+            return i;
+        }
+
+        /*
+         * Select the page whose next use is
+         * farthest away.
+         */
+        if (j > farthest)
+        {
+            farthest = j;
+            replacementIndex = i;
+        }
+    }
+
+    /*
+     * If no replacement index was found,
+     * replace the first frame.
+     */
+    if (replacementIndex == -1)
+    {
+        replacementIndex = 0;
+    }
+
+    return replacementIndex;
+}
+
+/*
+ * Display all frames.
+ */
+void displayFrames(int frames[], int frameCount)
+{
+    printf("| ");
+
+    for (int i = 0; i < frameCount; i++)
+    {
+        if (frames[i] == -1)
+        {
+            printf("- | ");
+        }
+        else
+        {
+            printf("%d | ", frames[i]);
+        }
+    }
+}
+
+int main()
+{
+    int pageCount;
+    int frameCount;
+
+    printf("================================================\n");
+    printf("          OPTIMAL PAGE REPLACEMENT\n");
+    printf("================================================\n");
+
+    printf("\nEnter number of pages: ");
+    scanf("%d", &pageCount);
+
+    if (pageCount <= 0)
+    {
+        printf("Invalid number of pages.\n");
+        return 1;
+    }
+
+    int *pages = malloc(pageCount * sizeof(int));
+
+    if (pages == NULL)
+    {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
+    printf("Enter the reference string:\n");
+
+    for (int i = 0; i < pageCount; i++)
+    {
+        scanf("%d", &pages[i]);
+    }
+
+    printf("\nEnter number of frames: ");
+    scanf("%d", &frameCount);
+
+    if (frameCount <= 0)
+    {
+        printf("Invalid number of frames.\n");
+        free(pages);
+        return 1;
+    }
+
+    int *frames = malloc(frameCount * sizeof(int));
+
+    if (frames == NULL)
+    {
+        printf("Memory allocation failed.\n");
+        free(pages);
+        return 1;
+    }
+
+    /*
+     * Initially all frames are empty.
+     */
+    for (int i = 0; i < frameCount; i++)
+    {
+        frames[i] = -1;
+    }
+
+    int pageFaults = 0;
+    int pageHits = 0;
+
+    printf("\n-------------------------------------------------------\n");
+    printf("Page\tStatus\tFrames\n");
+    printf("-------------------------------------------------------\n");
+
+    for (int i = 0; i < pageCount; i++)
+    {
+        int currentPage = pages[i];
+
+        if (isPagePresent(frames, frameCount, currentPage))
+        {
+            pageHits++;
+
+            printf("%d\tHIT\t", currentPage);
+        }
+        else
+        {
+            pageFaults++;
+
+            int emptyFrame = -1;
+
+            /*
+             * First check whether an empty frame exists.
+             */
+            for (int j = 0; j < frameCount; j++)
+            {
+                if (frames[j] == -1)
+                {
+                    emptyFrame = j;
+                    break;
+                }
+            }
+
+            if (emptyFrame != -1)
+            {
+                frames[emptyFrame] = currentPage;
+            }
+            else
+            {
+                int replaceIndex =
+                    findOptimalPage(
+                        frames,
+                        frameCount,
+                        pages,
+                        pageCount,
+                        i
+                    );
+
+                frames[replaceIndex] = currentPage;
+            }
+
+            printf("%d\tFAULT\t", currentPage);
+        }
+
+        displayFrames(frames, frameCount);
+        printf("\n");
+    }
+
+    printf("-------------------------------------------------------\n");
+
+    printf("\n================ FINAL RESULTS ================\n");
+    printf("Total Pages      : %d\n", pageCount);
+    printf("Number of Frames : %d\n", frameCount);
+    printf("Page Hits        : %d\n", pageHits);
+    printf("Page Faults      : %d\n", pageFaults);
+
+    printf("Page Fault Rate  : %.2f%%\n",
+           ((double)pageFaults / pageCount) * 100);
+
+    printf("Page Hit Rate    : %.2f%%\n",
+           ((double)pageHits / pageCount) * 100);
+
+    printf("================================================\n");
+
+    free(pages);
+    free(frames);
+
+    return 0;
+}
