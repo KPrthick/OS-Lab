@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# ============================================================
+#                 CAT COMMAND DEMONSTRATION
+# ============================================================
+
+echo "======================================="
+echo "       UNIX CAT COMMANDS"
+echo "======================================="
+
+echo ""
+echo "1. Display file contents:"
+echo "cat sample.txt"
+
+echo ""
+echo "2. Display file with line numbers:"
+echo "cat -n sample.txt"
+
+echo ""
+echo "3. Display non-empty lines with numbers:"
+echo "cat -b sample.txt"
+
+echo ""
+echo "4. Display end of each line:"
+echo "cat -E sample.txt"
+
+echo ""
+echo "5. Squeeze multiple blank lines:"
+echo "cat -s sample.txt"
+
+echo ""
+echo "6. Combine two files:"
+echo "cat file1.txt file2.txt"
+
+echo ""
+echo "7. Create a new file:"
+echo "cat > newfile.txt"
+
+echo ""
+echo "======================================="
