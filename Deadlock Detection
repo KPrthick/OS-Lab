@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+int main() {
+    int alloc[3][2] = {{1,0}, {0,1}, {1,0}};
+    int req[3][2]   = {{0,1}, {1,0}, {0,1}};
+    int work[2] = {0,0};
+    int finish[3] = {0,0,0};
+    int i, j, k, can;
+
+    for(k = 0; k < 3; k++) {
+        for(i = 0; i < 3; i++) {
+
+            if(finish[i] == 0) {
+                can = 1;
+
+                for(j = 0; j < 2; j++) {
+                    if(req[i][j] > work[j])
+                        can = 0;
+                }
+
+                if(can) {
+                    for(j = 0; j < 2; j++)
+                        work[j] += alloc[i][j];
+
+                    finish[i] = 1;
+                }
+            }
+        }
+    }
+
+    printf("Deadlocked processes: ");
+
+    for(i = 0; i < 3; i++) {
+        if(finish[i] == 0)
+            printf("P%d ", i);
+    }
+
+    return 0;
+}
