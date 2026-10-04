@@ -1,0 +1,135 @@
+/*
+ * ============================================================
+ *                    IPC USING PIPE
+ * ============================================================
+ *
+ * Description:
+ *     A pipe provides communication between processes.
+ *
+ *     One process writes data into the pipe and another
+ *     process reads the data.
+ *
+ *     pipe() creates two file descriptors:
+ *
+ *       fd[0] -> Read end
+ *       fd[1] -> Write end
+ *
+ * ============================================================
+ */
+
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+
+int main()
+{
+    int pipeFD[2];
+
+    char message[] =
+        "Hello from Parent Process";
+
+    char buffer[100];
+
+    printf("================================================\n");
+    printf("               IPC USING PIPE\n");
+    printf("================================================\n");
+
+    /*
+     * Create pipe.
+     */
+    if (pipe(pipeFD) == -1)
+    {
+        perror("Pipe creation failed");
+        return 1;
+    }
+
+    printf("\nPipe created successfully.\n");
+
+    /*
+     * Create child process.
+     */
+    int pid = fork();
+
+    if (pid < 0)
+    {
+        perror("Fork failed");
+        return 1;
+    }
+
+    /*
+     * Child process
+     */
+    if (pid == 0)
+    {
+        printf("\n--------------- CHILD PROCESS ---------------\n");
+
+        /*
+         * Child only reads.
+         * Therefore close write end.
+         */
+        close(pipeFD[1]);
+
+        printf("Child waiting for message...\n");
+
+        int bytesRead =
+            read(
+                pipeFD[0],
+                buffer,
+                sizeof(buffer) - 1
+            );
+
+        if (bytesRead < 0)
+        {
+            perror("Read failed");
+            close(pipeFD[0]);
+            exit(1);
+        }
+
+        buffer[bytesRead] = '\0';
+
+        printf("Child received: %s\n", buffer);
+
+        close(pipeFD[0]);
+
+        printf("Child completed.\n");
+    }
+
+    /*
+     * Parent process
+     */
+    else
+    {
+        printf("\n--------------- PARENT PROCESS ---------------\n");
+
+        /*
+         * Parent only writes.
+         * Therefore close read end.
+         */
+        close(pipeFD[0]);
+
+        printf("Parent sending message...\n");
+
+        write(
+            pipeFD[1],
+            message,
+            strlen(message) + 1
+        );
+
+        printf("Message sent successfully.\n");
+
+        close(pipeFD[1]);
+
+        /*
+         * Wait for child.
+         */
+        wait(NULL);
+
+        printf("Parent completed.\n");
+    }
+
+    printf("\n================================================\n");
+
+    return 0;
+}
