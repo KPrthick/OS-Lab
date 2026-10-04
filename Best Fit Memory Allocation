@@ -1,0 +1,232 @@
+/*
+ * ============================================================
+ *                 BEST FIT MEMORY ALLOCATION
+ * ============================================================
+ *
+ * Description:
+ *     Best Fit allocates a process to the smallest available
+ *     memory block that is large enough to accommodate it.
+ *
+ * Example:
+ *
+ *     Blocks:
+ *     500 200 300 600
+ *
+ *     Processes:
+ *     357 129 191
+ *
+ * ============================================================
+ */
+
+#include <stdio.h>
+
+/*
+ * Find the best suitable block for a process.
+ */
+int findBestFit(
+    int blocks[],
+    int blockCount,
+    int processSize)
+{
+    int bestIndex = -1;
+
+    for (int i = 0; i < blockCount; i++)
+    {
+        /*
+         * Block must be large enough.
+         */
+        if (blocks[i] >= processSize)
+        {
+            /*
+             * Select the smallest suitable block.
+             */
+            if (bestIndex == -1 ||
+                blocks[i] < blocks[bestIndex])
+            {
+                bestIndex = i;
+            }
+        }
+    }
+
+    return bestIndex;
+}
+
+/*
+ * Display current memory blocks.
+ */
+void displayBlocks(
+    int blocks[],
+    int blockCount)
+{
+    printf("\nCurrent Memory Blocks:\n");
+
+    printf("-----------------------------------\n");
+
+    for (int i = 0; i < blockCount; i++)
+    {
+        printf(
+            "Block %d : %d KB\n",
+            i + 1,
+            blocks[i]
+        );
+    }
+
+    printf("-----------------------------------\n");
+}
+
+int main()
+{
+    int blockCount;
+    int processCount;
+
+    printf("================================================\n");
+    printf("             BEST FIT MEMORY ALLOCATION\n");
+    printf("================================================\n");
+
+    printf("\nEnter number of memory blocks: ");
+    scanf("%d", &blockCount);
+
+    if (blockCount <= 0)
+    {
+        printf("Invalid number of blocks.\n");
+        return 1;
+    }
+
+    int blocks[blockCount];
+
+    printf("\nEnter memory block sizes in KB:\n");
+
+    for (int i = 0; i < blockCount; i++)
+    {
+        printf("Block %d: ", i + 1);
+        scanf("%d", &blocks[i]);
+
+        if (blocks[i] <= 0)
+        {
+            printf("Invalid block size.\n");
+            return 1;
+        }
+    }
+
+    printf("\nEnter number of processes: ");
+    scanf("%d", &processCount);
+
+    if (processCount <= 0)
+    {
+        printf("Invalid number of processes.\n");
+        return 1;
+    }
+
+    int processes[processCount];
+    int allocatedBlock[processCount];
+
+    printf("\nEnter process sizes in KB:\n");
+
+    for (int i = 0; i < processCount; i++)
+    {
+        printf("Process %d: ", i + 1);
+        scanf("%d", &processes[i]);
+
+        allocatedBlock[i] = -1;
+
+        if (processes[i] <= 0)
+        {
+            printf("Invalid process size.\n");
+            return 1;
+        }
+    }
+
+    printf("\n================================================\n");
+    printf("              ALLOCATION PROCESS\n");
+    printf("================================================\n");
+
+    /*
+     * Allocate each process using Best Fit.
+     */
+    for (int i = 0; i < processCount; i++)
+    {
+        int bestIndex =
+            findBestFit(
+                blocks,
+                blockCount,
+                processes[i]
+            );
+
+        if (bestIndex != -1)
+        {
+            allocatedBlock[i] = bestIndex;
+
+            printf(
+                "\nProcess P%d (%d KB) allocated to Block %d (%d KB)\n",
+                i + 1,
+                processes[i],
+                bestIndex + 1,
+                blocks[bestIndex]
+            );
+
+            /*
+             * Reduce the remaining free space.
+             */
+            blocks[bestIndex] -= processes[i];
+
+            printf(
+                "Remaining space in Block %d = %d KB\n",
+                bestIndex + 1,
+                blocks[bestIndex]
+            );
+        }
+        else
+        {
+            printf(
+                "\nProcess P%d (%d KB) cannot be allocated.\n",
+                i + 1,
+                processes[i]
+            );
+        }
+    }
+
+    /*
+     * Display final allocation table.
+     */
+    printf("\n================================================\n");
+    printf("              FINAL ALLOCATION\n");
+    printf("================================================\n");
+
+    printf(
+        "\nProcess\tSize\tBlock\tStatus\n"
+    );
+
+    printf(
+        "-----------------------------------------------\n"
+    );
+
+    for (int i = 0; i < processCount; i++)
+    {
+        if (allocatedBlock[i] != -1)
+        {
+            printf(
+                "P%d\t%d KB\tB%d\tAllocated\n",
+                i + 1,
+                processes[i],
+                allocatedBlock[i] + 1
+            );
+        }
+        else
+        {
+            printf(
+                "P%d\t%d KB\t-\tNot Allocated\n",
+                i + 1,
+                processes[i]
+            );
+        }
+    }
+
+    displayBlocks(
+        blocks,
+        blockCount
+    );
+
+    printf("\n================================================\n");
+
+    return 0;
+}
