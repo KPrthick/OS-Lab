@@ -1,0 +1,141 @@
+/*
+ * ============================================================
+ *                 FCFS WAITING TIME TRACE
+ * ============================================================
+ *
+ * Description:
+ *     Reads burst times of processes and calculates:
+ *
+ *       - Waiting Time
+ *       - Total Waiting Time
+ *       - Average Waiting Time
+ *
+ * ============================================================
+ */
+
+#include <stdio.h>
+
+int main()
+{
+    int n;
+
+    printf("================================================\n");
+    printf("             FCFS WAITING TIME TRACE\n");
+    printf("================================================\n");
+
+    printf("\nEnter number of processes: ");
+    scanf("%d", &n);
+
+    if (n <= 0)
+    {
+        printf("Invalid number of processes.\n");
+        return 1;
+    }
+
+    int burstTime[n];
+    int waitingTime[n];
+
+    printf("\nEnter burst times:\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("P%d: ", i + 1);
+        scanf("%d", &burstTime[i]);
+
+        if (burstTime[i] <= 0)
+        {
+            printf("Invalid burst time.\n");
+            return 1;
+        }
+    }
+
+    /*
+     * First process does not wait.
+     */
+    waitingTime[0] = 0;
+
+    /*
+     * Calculate waiting time for remaining processes.
+     */
+    for (int i = 1; i < n; i++)
+    {
+        waitingTime[i] =
+            waitingTime[i - 1] +
+            burstTime[i - 1];
+    }
+
+    printf("\n================================================\n");
+    printf("                  FCFS TRACE\n");
+    printf("================================================\n");
+
+    printf("\nProcess\tBurst Time\tWaiting Time\n");
+
+    int totalWaitingTime = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        printf(
+            "P%d\t%d\t\t%d\n",
+            i + 1,
+            burstTime[i],
+            waitingTime[i]
+        );
+
+        totalWaitingTime += waitingTime[i];
+    }
+
+    printf("\n------------------------------------------------\n");
+
+    printf(
+        "Total Waiting Time   : %d\n",
+        totalWaitingTime
+    );
+
+    printf(
+        "Average Waiting Time : %.2f\n",
+        (double)totalWaitingTime / n
+    );
+
+    printf("================================================\n");
+
+    /*
+     * Display Gantt chart.
+     */
+    printf("\nGantt Chart:\n\n");
+
+    int currentTime = 0;
+
+    printf(" ");
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("-------");
+    }
+
+    printf("\n|");
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("  P%d  |", i + 1);
+    }
+
+    printf("\n ");
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("-------");
+    }
+
+    printf("\n0");
+
+    for (int i = 0; i < n; i++)
+    {
+        currentTime += burstTime[i];
+
+        printf("%7d", currentTime);
+    }
+
+    printf("\n");
+
+    return 0;
+}
